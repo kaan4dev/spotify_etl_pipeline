@@ -1,0 +1,23 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.env/
+.venv/
+
+# Local configuration
+.python-version
+
+# macOS metadata
+.DS_Store
+
+# Data outputs and logs
+/data/raw/
+/data/processed/
+/logs/
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
