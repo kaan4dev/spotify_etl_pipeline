@@ -1,7 +1,7 @@
 import os
 from pyspark.sql import SparkSession
 from pyspark.sql.types import ArrayType, StringType
-from pyspark.sql.functions import regexp_replace, from_json, explode, to_date, when, col, expr
+from pyspark.sql.functions import regexp_replace, from_json, explode, to_date, when, col, expr, year
 
 RAW_DATA_FILE = os.path.join("data", "raw", "spotify.csv")
 PROCESSED_DATA_DIR = os.path.join("data", "processed")
@@ -36,6 +36,12 @@ def transform_spotify_data():
         when(col("release_date").rlike("^[0-9]{4}$"), expr("to_date(concat(release_date,'-01-01'), 'yyyy-MM-dd')"))
         .when(col("release_date").rlike("^[0-9]{4}-[0-9]{2}$"), expr("to_date(concat(release_date,'-01'), 'yyyy-MM-dd')"))
         .otherwise(to_date("release_date", "yyyy-MM-dd"))
+    )
+
+    # Drop placeholder dates (e.g. year 0000) that BigQuery rejects
+    df = df.withColumn(
+        "release_date",
+        when(year("release_date") < 1900, None).otherwise(col("release_date"))
     )
 
     df = df.withColumnRenamed("id", "song_id") \
